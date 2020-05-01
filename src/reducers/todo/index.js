@@ -1,12 +1,12 @@
-import initialState from '../../initstate';
+import initialState from '../../store/initstate';
 import {
     ADD_TODO,
     UPDATE_TODO,
     DELETE_TODO,
     LOADING,
-} from '../actions/types';
+} from '../../actions/types';
 
-const appReducer = (state = initialState, action) => {
+const activityReducers = (state = initialState.activity, action) => {
     switch (action.type) {
         case ADD_TODO:
             let id = state.id + 1;
@@ -31,7 +31,7 @@ const appReducer = (state = initialState, action) => {
             };
         case DELETE_TODO:
             return {
-                todos: state.todos.filter(todo => todo.id !== action.payload.id),
+                todos: state.todos.filter(todo => todo.id != action.payload.id),
                 id: state.id,
             };
         case LOADING:
@@ -44,4 +44,4 @@ const appReducer = (state = initialState, action) => {
     }
 }
 
-export default appReducer;
+export default activityReducers;
