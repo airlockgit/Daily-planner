@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import moment from 'moment';
 import { useHistory } from 'react-router-dom';
 
-const formetDate = 'YYYY-MM-DD';
+const formatDate = 'YYYY-MM-DD';
 
 const Calendar = () => {
     const history = useHistory();
@@ -16,9 +16,9 @@ const Calendar = () => {
         const task = todos.find(todo => moment(todo.date).isSame(value.format('YYYY-MM-DD')));
 
         if (task) {
-            history.push('activity/edit/' + task.id + '#calendar');
+            history.push('activity/' + task.date + '#calendar');
         } else {
-            history.push('activity/new/' + moment(value).format(formetDate) + '#calendar');
+            history.push('activity/new/' + moment(value).format(formatDate) + '#calendar');
         }
     }
 

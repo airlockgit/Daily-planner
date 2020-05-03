@@ -153,17 +153,27 @@ const Activity = ({ modalOpen, remove, edit }) => {
         })
     }
 
+    const newtTodos = () => {
+
+        if (newDate && hashCalendar) {
+            console.log(newDate, hashCalendar)
+            return todos.filter(todo => moment(todo.date).isSame(moment(newDate).format(formatDate)));
+        } else {
+            return todos.sort((a, b) => b.id - a.id)
+        }
+    }
+
     return (
         <div className={styled.container}>
             <div className={styled.box}>
-                <h2>Cписок задач</h2>
+                <h2>Cписок задач {newDate && `за ${newDate}`}</h2>
                 <Button
                     type="primary"
                     onClick={_handleNewTask}
                 >+ Создать</Button>
                 <div>
                     {
-                        todos.sort((a, b) => b.id - a.id).map((todo, i) => {
+                        newtTodos().map((todo, i) => {
                             if (todo.id != 0) {
                                 return (
                                     <Comment key={i}

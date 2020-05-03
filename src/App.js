@@ -39,7 +39,7 @@ const App = () => {
               <Route path="/activity/new/:date?" children={<Activity modalOpen={true} />} />
               <Route path="/activity/edit/:id" children={<Activity edit={true} />} />
               <Route path="/activity/delete/:id" children={<Activity remove={true} />} />
-              <Route path="/activity" component={Activity} />
+              <Route path="/activity/:date?" component={Activity} />
             </Switch>
           </Content>
         </Layout>
