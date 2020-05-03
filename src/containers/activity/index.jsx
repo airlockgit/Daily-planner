@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Link, useParams, useLocation, useHistory } from "react-router-dom";
+import { Link, useParams, useHistory } from "react-router-dom";
 import styled from './activity.module.scss';
 import moment from 'moment';
 import {
@@ -10,22 +10,33 @@ import {
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import * as createActions from '../../actions/todos';
 
+const formatDate = 'YYYY-MM-DD';
+
 const Activity = ({ modalOpen, remove, edit }) => {
     const history = useHistory();
-    const { id } = useParams();
+    const { id, date: newDate } = useParams();
     const dispatch = useDispatch();
+
+    const hashCalendar = window.location.hash;
 
     const [modalOptions, setModalOptions] = useState({
         open: modalOpen,
     });
 
-    const [task, setTask] = useState({});
+    const defaultTask = {
+        date: newDate ? newDate : moment().format(formatDate),
+        timeFrom: '12:00',
+        timeTo: '12:05',
+        remindTime: false,
+        closed: false,
+    };
 
+    const [task, setTask] = useState(defaultTask);
     const { todos } = useSelector(state => state.activity);
 
     const _handleInput = e => {
         const { value } = e.target;
-        console.log(task);
+
         setTask({
             ...task,
             title: value,
@@ -33,6 +44,10 @@ const Activity = ({ modalOpen, remove, edit }) => {
     }
 
     useEffect(() => {
+        showModalFromPage();
+    }, [edit, remove]);
+
+    const showModalFromPage = () => {
         if (id) {
             const newTask = todos.find(todo => todo.id == id);
 
@@ -44,26 +59,27 @@ const Activity = ({ modalOpen, remove, edit }) => {
                     history.push('/activity');
                 }
             } else if (remove) {
-                if (newTask) {
-                    showDeleteConfirm(() => {
-                        dispatch(createActions.deleteTodo(id));
-                    },
-                        () => history.push('/activity'));
-                } else {
-                    history.push('/activity');
+                const redirect = () => hashCalendar ? history.goBack() : history.push('/activity');
+
+                if (newTask) {//если id указан верный
+                    showDeleteConfirm(() => {//да, нет
+                        dispatch(createActions.deleteTodo(id))
+                            .then(redirect);
+                    }, redirect);
+                } else {//редирект на страницу создания задач
+                    history.push('/activity')
                 }
             }
         }
-    }, [edit, remove]);
+    }
 
-    function showDeleteConfirm(callbackOk, callbackCancel) {
+    const showDeleteConfirm = (callbackOk, callbackCancel) => {
         Modal.confirm({
-            title: 'Are you sure delete this task?',
+            title: 'Вы действительно хотите удалить событие?',
             icon: <ExclamationCircleOutlined />,
-            content: 'Some descriptions',
-            okText: 'Yes',
+            okText: 'Да',
             okType: 'danger',
-            cancelText: 'No',
+            cancelText: 'Нет',
             onOk() {
                 callbackOk();
             },
@@ -81,33 +97,36 @@ const Activity = ({ modalOpen, remove, edit }) => {
 
     const _handleCloseModal = () => {
         history.push('/activity');
-        setModalOptions({ open: false })
+        setModalOptions({ open: false });
+        setTask(defaultTask);
+
+        if (hashCalendar) history.push('/calendar');
     }
 
     const _handleOkModal = () => {
         const updateTask = () => {
-            setTask({});
-            history.push('/activity');
+            setTask(defaultTask);
             setModalOptions({ open: false });
+            hashCalendar ? history.push('/calendar') : history.push('/activity');
         }
 
         if (!id) {
             dispatch(createActions.addTodo(task))//новая задача
                 .then(() => {
-                    updateTask();
-
                     Modal.success({
                         content: 'Событие добавлено!',
                     });
+
+                    updateTask();
                 });
         } else {//редактирование
             dispatch(createActions.updateTodo(task))
                 .then(() => {
-                    updateTask();
-
                     Modal.success({
                         content: 'Событие обновлено!',
                     });
+
+                    updateTask();
                 });
         }
     }
@@ -119,17 +138,18 @@ const Activity = ({ modalOpen, remove, edit }) => {
         })
     }
 
-    const changeTimeFrom = (time, timeString) => {
+    const changeTime = (time, timeString) => {
         setTask({
             ...task,
-            timeFrom: timeString,
+            timeFrom: timeString[0],
+            timeTo: timeString[1],
         })
     }
 
-    const changeTimeTo = (time, timeString) => {
+    const changeRemindTime = (time, timeString) => {
         setTask({
             ...task,
-            timeTo: timeString,
+            remindTime: timeString,
         })
     }
 
@@ -143,21 +163,36 @@ const Activity = ({ modalOpen, remove, edit }) => {
                 >+ Создать</Button>
                 <div>
                     {
-                        todos.map((todo, i) => {
+                        todos.sort((a, b) => b.id - a.id).map((todo, i) => {
                             if (todo.id != 0) {
                                 return (
                                     <Comment key={i}
+                                        id={todo.id}//для якоря
                                         author={<h2>{todo.title}</h2>}
                                         content={
-                                            <>
-                                                <p>
-                                                    {`Дата ${todo.date ? todo.date : ' '}, Время от ${todo.timeFrom ? todo.timeFrom : ' '} до ${todo.timeTo ? todo.timeTo : ' '}`}
-                                                </p>
-                                                <p>
-                                                    <Link to={`/activity/edit/${todo.id}`}>Редактировать</Link>
-                                                    <Link to={`/activity/delete/${todo.id}`}>Удалить</Link>
-                                                </p>
-                                            </>
+                                            <div className={styled.editBox}>
+                                                <Row>
+                                                    <Col>
+                                                        {`Дата ${todo.date ? todo.date : ' '} Время от ${todo.timeFrom ? todo.timeFrom : ' '} до ${todo.timeTo ? todo.timeTo : ''}`}
+                                                    </Col>
+                                                </Row>
+                                                <Row>
+                                                    <Col>
+                                                        {
+                                                            todo.remindTime ?
+                                                                <span>Напомнить за: <span className={styled.remind__number}>{todo.remindTime.replace(/0/g, ' ')} минут</span></span> : null
+                                                        }
+                                                    </Col>
+                                                </Row>
+                                                <Row className={styled.editBox__options}>
+                                                    <Col span={2}>
+                                                        <Link className={styled.link} to={`/activity/edit/${todo.id}`}>Редактировать</Link>
+                                                    </Col>
+                                                    <Col span={2}>
+                                                        <Link className={styled.link__delete} to={`/activity/delete/${todo.id}`}>Удалить</Link>
+                                                    </Col>
+                                                </Row>
+                                            </div>
                                         }
                                     />
                                 )
@@ -166,7 +201,7 @@ const Activity = ({ modalOpen, remove, edit }) => {
                     }
                 </div>
                 <Modal
-                    title="Новая задача"
+                    title={id ? 'Редактировать' : 'Новая задача'}
                     visible={modalOptions.open}
                     onOk={_handleOkModal}
                     onCancel={_handleCloseModal}
@@ -175,36 +210,47 @@ const Activity = ({ modalOpen, remove, edit }) => {
                 >
                     <Input placeholder="Название" onChange={_handleInput} value={task.title} />
                     <div className={styled.list}>
-                        <Row className={styled.list__item}>
-                            <Col span={4}>
+                        <Row className={styled.list__item} align='middle'>
+                            <Col span={5}>
                                 Дата:
                         </Col>
                             <Col span={6}>
-                                <DatePicker onChange={changeDate} />
+                                <DatePicker
+                                    format={formatDate}
+                                    value={moment(task.date ? task.date : moment().format(formatDate))} onChange={changeDate} />
                             </Col>
                         </Row>
-                        <Row className={styled.list__item}>
-                            <Col span={4}>
-                                Время от:
+                        <Row className={styled.list__item} align='middle'>
+                            <Col span={5}>
+                                Время:
+                        </Col>
+                            <Col span={13}>
+                                <TimePicker.RangePicker
+                                    onCalendarChange={changeTime}
+                                    format="HH:mm"
+                                    value={[moment(task.timeFrom ? task.timeFrom : '00:00', 'HH:mm'),
+                                    moment(task.timeTo ? task.timeTo : '00:05', 'HH:mm')]} />
+                            </Col>
+                        </Row>
+                        <Row className={styled.list__item} align='middle'>
+                            <Col span={5}>
+                                Напомнить за:
                         </Col>
                             <Col span={6}>
                                 <TimePicker
-                                    onChange={changeTimeFrom}
-                                    format="h:mm a"
-                                    defaultValue={moment('00:00', 'HH:mm')} />
+                                    onChange={changeRemindTime}
+                                    format="mm"
+                                    value={moment(task.remindTime ? task.remindTime : '00', 'mm')} />
                             </Col>
                         </Row>
-                        <Row className={styled.list__item}>
-                            <Col span={4}>
-                                Время до:
-                        </Col>
-                            <Col span={6}>
-                                <TimePicker
-                                    onChange={changeTimeTo}
-                                    format="h:mm a"
-                                    defaultValue={moment('00:00', 'HH:mm')} />
-                            </Col>
-                        </Row>
+                        {
+                            hashCalendar && id &&
+                            <Row>
+                                <Col>
+                                    <Link className={styled.link__delete} to={`/activity/delete/${task.id}#calendar`}>Удалить событие</Link>
+                                </Col>
+                            </Row>
+                        }
                     </div>
                 </Modal>
             </div>

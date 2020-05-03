@@ -20,6 +20,7 @@ const activityConfig = {
 const appConfig = {
     key: 'app',
     storage,
+    blacklist: ['app', 'activity'],
 }
 
 const rootReducer = combineReducers({

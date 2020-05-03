@@ -4,3 +4,28 @@
     padding: 30px 15px 10px 15px;
     box-sizing: border-box;
 }
+
+.events {
+    list-style-type: none;
+    padding: 5px;
+
+    &__item {
+        font-family: 'Roboto', sans-serif;
+        font-size: 16px;
+        padding: 2px 10px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+
+        &::after {
+            position: absolute;
+            content: '';
+            height: 9px;
+            width: 9px;
+            border-radius: 50%;
+            left: 8px;
+            margin-top: 9px;
+            background-color: rgb(69, 221, 69);
+        }
+    }
+}

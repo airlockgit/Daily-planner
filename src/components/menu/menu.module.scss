@@ -9,3 +9,17 @@
     width: 900px;
     box-sizing: border-box;
   }
+
+.link {
+  &_active {
+    color: #ec1010;
+
+    &:hover {
+      color: #ec1010;
+    }
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

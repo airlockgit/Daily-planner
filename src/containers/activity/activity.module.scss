@@ -1,10 +1,39 @@
 .box {
-    padding: 15px;
+    padding: 50px 30px 30px 30px;
     box-sizing: border-box;
 }
 
 .list {
     &__item {
         padding: 15px 0px;
+    }
+}
+
+.link {
+    color: #1890ff;
+
+    &__delete {
+        composes: link;
+        color: #e66565;
+
+        &:hover {
+            color: #e66565;
+        }
+    }
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+.remind {
+    &__number {
+        color: #4fce4f;
+    }
+}
+
+.editBox {
+    &__options {
+        padding: 7px 0px;
     }
 }

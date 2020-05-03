@@ -19,6 +19,8 @@ const initialState = {
                 date: undefined,
                 timeFrom: undefined,
                 timeTo: undefined,
+                remindTime: false,
+                closed: false,
                 id: 0,
             }
         ],
