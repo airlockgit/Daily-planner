@@ -12,12 +12,11 @@ function* fetchProducts() {
     yield call(isLoadingDefault, false)
     yield delay(2000)
 
-    const response = yield call(Api.fetchProducts)
-
-    if (response) {
+    try {
+        const response = yield call(Api.fetchProducts)
         yield put({ type: 'PRODUCTS_RECEIVED', payload: response.data })
         yield call(isLoadingDefault, true)
-    } else {
+    } catch (e) {
         yield put({ type: 'ISERROR', payload: true })
     }
 }
@@ -26,12 +25,11 @@ function* fetchProduct(action) {
     yield call(isLoadingDefault, false)
     yield delay(2000)//долгая загрузка
 
-    const response = yield call(Api.fetchProduct, action.id)
-
-    if (response) {
+    try {
+        const response = yield call(Api.fetchProduct, action.id)
         yield put({ type: 'PRODUCT_RECEIVED', payload: response.data })
         yield call(isLoadingDefault, true)
-    } else {
+    } catch (e) {
         yield put({ type: 'ISERROR', payload: true })
     }
 }
