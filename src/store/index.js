@@ -5,6 +5,11 @@ import thunk from 'redux-thunk';
 import { appReducers } from '../reducers/app';
 import activityReducers from '../reducers/todo';
 import initialState from './initstate';
+///redux-saga for demo task#2
+import createSagaMiddleware from 'redux-saga';
+import { rootSaga } from '../sagas';
+
+const sagaMiddleware = createSagaMiddleware();
 
 const persistConfig = {
     key: 'root',
@@ -20,7 +25,7 @@ const activityConfig = {
 const appConfig = {
     key: 'app',
     storage,
-    blacklist: ['app', 'activity'],
+    blacklist: ['menu', 'services'],
 }
 
 const rootReducer = combineReducers({
@@ -33,6 +38,9 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 export const store = createStore(
     persistedReducer,
     initialState,
-    applyMiddleware(thunk)
+    applyMiddleware(thunk, sagaMiddleware)
 );
+
+sagaMiddleware.run(rootSaga);
+
 export const persistor = persistStore(store);

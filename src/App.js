@@ -10,6 +10,7 @@ import { Header } from './components/header';
 import { useRemind } from './components/reminder';
 import { useDispatch } from 'react-redux';
 import * as createActions from './actions/todos';
+import { Services, Detail } from './containers/services';
 
 const { Sider, Content } = Layout;
 
@@ -35,6 +36,8 @@ const App = () => {
           <Content className={styled.content}>
             <Route exact path="/" component={Home} />
             <Route path="/calendar" component={Calendar} />
+            <Route exact path="/services" component={Services} />
+            <Route path="/:id/details" component={Detail} />
             <Switch>
               <Route path="/activity/new/:date?" children={<Activity modalOpen={true} />} />
               <Route path="/activity/edit/:id" children={<Activity edit={true} />} />

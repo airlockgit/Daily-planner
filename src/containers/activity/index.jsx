@@ -154,7 +154,6 @@ const Activity = ({ modalOpen, remove, edit }) => {
     }
 
     const newtTodos = () => {
-
         if (newDate && hashCalendar) {
             console.log(newDate, hashCalendar)
             return todos.filter(todo => moment(todo.date).isSame(moment(newDate).format(formatDate)));

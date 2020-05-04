@@ -8,9 +8,18 @@ const initialState = {
             {
                 title: 'Мероприятия',
                 link: '/activity',
+            },
+            {
+                title: 'Услуги',
+                link: '/services',
             }
         ],
-        isLoading: false,
+        services: {
+            error: false,
+            isLoading: false,
+            products: [],
+            product: {},
+        }
     },
     activity: {
         todos: [
