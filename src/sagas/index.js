@@ -1,4 +1,4 @@
-import { call, put, takeEvery, takeLatest, all, take } from 'redux-saga/effects';
+import { call, put, takeEvery, all, take, fork } from 'redux-saga/effects';
 import Api from '../api';
 
 const delay = ms => new Promise(res => setTimeout(res, ms))
@@ -40,7 +40,7 @@ function* watchFetchProducts() {
 }
 
 export function* rootSaga() {
-    yield all([
-        watchFetchProducts()
+    const [products] = yield all([
+        fork(watchFetchProducts)
     ])
 }

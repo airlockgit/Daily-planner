@@ -14,7 +14,7 @@ import { Services, Detail } from './containers/services';
 
 const { Sider, Content } = Layout;
 
-const App = () => {
+function App() {
   const dispatch = useDispatch();
   const notifications = useRemind();
 
@@ -34,11 +34,11 @@ const App = () => {
             <Menu />
           </Sider>
           <Content className={styled.content}>
-            <Route exact path="/" component={Home} />
-            <Route path="/calendar" component={Calendar} />
-            <Route exact path="/services" component={Services} />
-            <Route path="/:id/details" component={Detail} />
             <Switch>
+              <Route exact path="/" component={Home} />
+              <Route path="/calendar" component={Calendar} />
+              <Route path="/services" component={Services} />
+              <Route path="/:id/details" component={Detail} />
               <Route path="/activity/new/:date?" children={<Activity modalOpen={true} />} />
               <Route path="/activity/edit/:id" children={<Activity edit={true} />} />
               <Route path="/activity/delete/:id" children={<Activity remove={true} />} />
