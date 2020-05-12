@@ -7,7 +7,7 @@ import { Menu } from './components/menu';
 import Activity from './containers/activity';
 import Home from './containers/home';
 import { Header } from './components/header';
-import { useRemind } from './components/reminder';
+import { useRemind } from './hooks/reminder';
 import { useDispatch } from 'react-redux';
 import * as createActions from './actions/todos';
 import { Services, Detail } from './containers/services';
@@ -39,10 +39,10 @@ function App() {
               <Route path="/calendar" component={Calendar} />
               <Route path="/services" component={Services} />
               <Route path="/:id/details" component={Detail} />
+              <Route exact path="/activity/:date?" component={Activity} />
               <Route path="/activity/new/:date?" children={<Activity modalOpen={true} />} />
               <Route path="/activity/edit/:id" children={<Activity edit={true} />} />
               <Route path="/activity/delete/:id" children={<Activity remove={true} />} />
-              <Route path="/activity/:date?" component={Activity} />
             </Switch>
           </Content>
         </Layout>
